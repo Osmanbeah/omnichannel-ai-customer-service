@@ -17,6 +17,16 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Ensure DB initialization on first request (essential for serverless environments)
+app.use(async (req, res, next) => {
+  try {
+    await initDatabase();
+  } catch (err) {
+    console.warn('[Server] DB lazy init notice:', err.message);
+  }
+  next();
+});
+
 // Serve static dashboard files
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -38,13 +48,9 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal server error', details: err.message });
 });
 
-// Start Server
-async function startServer() {
-  try {
-    // 1. Initialize SQLite database & tables
-    await initDatabase();
-
-    // 2. Start listening on configured port
+// Start listening when executed directly (local/standard node process)
+if (!process.env.VERCEL) {
+  initDatabase().then(() => {
     app.listen(config.port, () => {
       console.log('====================================================');
       console.log(`🚀 Omnichannel AI Customer Service Backend Running!`);
@@ -55,10 +61,10 @@ async function startServer() {
       console.log(`🔑 OpenRouter Key:      ${config.openrouter.apiKey ? 'Configured' : 'Missing (Mock mode)'}`);
       console.log('====================================================');
     });
-  } catch (error) {
-    console.error('Fatal startup error:', error);
-    process.exit(1);
-  }
+  }).catch((err) => {
+    console.error('Database startup error:', err);
+  });
 }
 
-startServer();
+// Export default app for Vercel / serverless runtime
+export default app;

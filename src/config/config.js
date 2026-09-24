@@ -43,8 +43,10 @@ export const config = {
     botResumedMessage: "Automated AI assistant has resumed. How can I help you today? 🤖",
   },
 
-  // Database path
+  // Database path (uses /tmp on Vercel/serverless where root fs is read-only)
   db: {
-    path: path.resolve(__dirname, '../../data/chatbot.db'),
+    path: process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME
+      ? path.join('/tmp', 'chatbot.db')
+      : path.resolve(__dirname, '../../data/chatbot.db'),
   }
 };
