@@ -34,8 +34,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/webhook', webhookRoutes);
 app.use('/api', apiRoutes);
 
-// Fallback to Dashboard
+// Fallback to Dashboard (or handle Meta challenge if sent to root)
 app.get('*', (req, res, next) => {
+  if (req.query['hub.mode'] && req.query['hub.challenge']) {
+    return webhookRoutes(req, res, next);
+  }
   if (req.path.startsWith('/api') || req.path.startsWith('/webhook')) {
     return next();
   }
