@@ -1,0 +1,29 @@
+{
+  "name": "omnichannel-ai-customer-service",
+  "version": "1.0.0",
+  "description": "Multi-platform AI customer service chatbot backend for Facebook Messenger and Telegram with live human handoff dashboard",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "chatbot",
+    "customer-service",
+    "facebook-messenger",
+    "telegram",
+    "openrouter",
+    "ai-agent",
+    "live-chat",
+    "human-handoff"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "sqlite3": "^5.1.7"
+  }
+}

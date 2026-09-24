@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Omnichannel AI Support & Handoff Dashboard</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Navigation Bar -->
+    <header class="navbar">
+      <div class="brand">
+        <div class="brand-logo">💬</div>
+        <div>
+          <h1>Omnichannel Support Hub</h1>
+          <p class="subtitle">Facebook Messenger • Page Comments • Telegram Bot</p>
+        </div>
+      </div>
+      
+      <div class="header-stats">
+        <div class="stat-card">
+          <span class="stat-label">Total Chats</span>
+          <span class="stat-value" id="totalChatsCount">0</span>
+        </div>
+        <div class="stat-card urgent">
+          <span class="stat-label">Needs Human</span>
+          <span class="stat-value" id="humanChatsCount">0</span>
+        </div>
+        <div class="stat-card active-bot">
+          <span class="stat-label">AI Handled</span>
+          <span class="stat-value" id="botChatsCount">0</span>
+        </div>
+        <button class="btn-simulator" id="openSimBtn">⚡ Simulate Message</button>
+      </div>
+    </header>
+
+    <!-- Main Content Workspace -->
+    <div class="workspace">
+      <!-- Left Sidebar: Conversations List -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search conversations...">
+          </div>
+          <div class="filter-tabs">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="human">👤 Human Takeover</button>
+            <button class="filter-btn" data-filter="bot">🤖 Bot Mode</button>
+          </div>
+        </div>
+
+        <div class="conversations-list" id="conversationsList">
+          <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <p>No active conversations yet.</p>
+            <small>Incoming messages from Messenger or Telegram will appear here.</small>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Right Area: Chat View & Message Stream -->
+      <main class="chat-main" id="chatMain">
+        <div class="no-selection" id="noSelectionState">
+          <div class="empty-icon">👈</div>
+          <h2>Select a conversation</h2>
+          <p>Choose a chat from the sidebar to inspect full history and take over live replies.</p>
+        </div>
+
+        <div class="chat-view hidden" id="activeChatView">
+          <!-- Chat Header -->
+          <div class="chat-header">
+            <div class="user-meta">
+              <div class="avatar" id="activeAvatar">U</div>
+              <div>
+                <div class="user-name-row">
+                  <h2 id="activeUserName">Customer Name</h2>
+                  <span class="platform-badge" id="activePlatformBadge">Platform</span>
+                </div>
+                <div class="user-subtext" id="activeUserId">ID: 000000</div>
+              </div>
+            </div>
+
+            <div class="chat-actions">
+              <div class="mode-status-container">
+                <span class="mode-indicator" id="activeModeIndicator">Mode</span>
+              </div>
+              <button class="btn-toggle-mode" id="toggleModeBtn">
+                🔄 Toggle Mode
+              </button>
+            </div>
+          </div>
+
+          <!-- Message History Stream -->
+          <div class="messages-container" id="messagesContainer">
+            <!-- Dynamic Messages -->
+          </div>
+
+          <!-- Message Composer Area -->
+          <div class="composer-container">
+            <div class="composer-mode-banner" id="composerBanner">
+              <span id="composerBannerText">🤖 Bot is currently answering this customer. Take over to reply as human.</span>
+            </div>
+            <form class="composer-form" id="composerForm">
+              <textarea 
+                id="composerInput" 
+                rows="2" 
+                placeholder="Type your reply as support team... (Press Enter to send, Shift+Enter for new line)"
+                required
+              ></textarea>
+              <button type="submit" class="btn-send" id="sendBtn">
+                <span>Send Reply</span>
+                <span class="send-icon">➤</span>
+              </button>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Test Message Simulation Modal -->
+  <div class="modal-overlay hidden" id="simModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>⚡ Test Message Simulator</h3>
+        <button class="modal-close" id="closeSimBtn">&times;</button>
+      </div>
+      <form id="simForm">
+        <div class="form-group">
+          <label>Platform</label>
+          <select id="simPlatform" required>
+            <option value="messenger">Facebook Messenger</option>
+            <option value="telegram">Telegram Bot</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>User Name</label>
+          <input type="text" id="simUserName" value="Sarah Connor" required>
+        </div>
+        <div class="form-group">
+          <label>User / Chat ID</label>
+          <input type="text" id="simUserId" value="test_user_789" required>
+        </div>
+        <div class="form-group">
+          <label>Incoming Message</label>
+          <textarea id="simText" rows="3" placeholder="e.g. Hello, can I speak with a human agent?" required></textarea>
+        </div>
+        <div class="quick-prompts">
+          <span>Quick prompts:</span>
+          <button type="button" class="btn-chip" data-prompt="What are your business opening hours?">General Question</button>
+          <button type="button" class="btn-chip" data-prompt="I need to talk to a human agent right now.">Trigger Handoff</button>
+          <button type="button" class="btn-chip" data-prompt="Can I get a refund for my order #1234?">Refund / Support</button>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" id="cancelSimBtn">Cancel</button>
+          <button type="submit" class="btn-primary">Send Test Message</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
